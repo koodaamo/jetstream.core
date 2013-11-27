@@ -1,1 +1,1 @@
-sphinxcontrib.programoutput
+sphinxcontrib_programoutput
