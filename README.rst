@@ -5,7 +5,7 @@ Jetstream
 .. image:: https://badge.fury.io/py/jetstream.png
     :target: http://badge.fury.io/py/jetstream
 
-.. image:: https://travis-ci.org/petri/jetstream.png?branch=master
+.. image:: https://travis-ci.org/koodaamo/jetstream.png?branch=master
         :target: https://travis-ci.org/koodaamo/jetstream
 
 .. image:: https://pypip.in/d/jetstream/badge.png
