@@ -1,31 +1,87 @@
+import traceback, sys
 from contextlib import contextmanager
 from importlib import import_module
 from types import SimpleNamespace
 import yaml
 
-@contextmanager
+from colorama import init, Fore
+init(autoreset=True)
+
+
+def red(txt):
+   return Fore.RED + txt + Fore.RESET
+
+def green(txt):
+   return Fore.GREEN + txt+ Fore.RESET
+
+
+class ComponentLoadingError(Exception):
+   "notify user of component loading problem"
+
+   def __init__(self, module, name, package=""):
+      if package:
+         package = "(%s)" % package
+      self.fullname = "%s%s.%s" % (package, module, name)
+
+   def __str__(self):
+      return red("There is no component '%s' installed." % self.fullname)
+
+
+def err(exc, msg):
+   "add a message to exception"
+   args = exc.args
+   if not args:
+      arg0 = ''
+   else:
+      arg0 = args[0]
+   arg0 += "\n\n%s" % msg
+   exc.args = (arg0,) + args[1:]
+   raise
+
+
 def yamlcfg(filename):
    with open(filename) as cfgfile:
-      return yaml.load(cfgfile)
+      config = yaml.load(cfgfile)
+   return config
+
+
+def subclasses_any(klass, abcs):
+   "test wheter a class subclasses one of given abcs"
+   for base in abcs:
+      if issubclass(klass, base):
+         return True
+   return False
 
 
 def import_name(fqn, package=None):
    "import a name"
    dotted = fqn.split(".")
-   klassname = dotted.pop()
+   name = dotted.pop()
    # klass part was removed from dotted by pop
    # relative imports need the package argument
-   module = import_module(".".join(dotted), package=package)
-   return getattr(module, klassname)
+
+   modulename = ".".join(dotted)
+
+   try:
+      module = import_module(modulename, package=package)
+   except ImportError as exc:
+      raise ComponentLoadingError(exc.name, name, package=package)
+
+   result = getattr(module, name, None)
+   if not result:
+      raise ComponentLoadingError(modulename, name, package=package)
+
+   return result
 
 
-def import_pipe(pipeconf, package="jetstream"):
-   "import pipe parts"
+def load_pipe(pipename, config, package=None):
+   "import pipe parts; return klass & cfg; no component name though"
    parts = []
-   for name, cfg in configs.items():
-      for part in cfg:
-         klass = import_klass(part["use"], package=package)
-         parts.append(klass)
+   pipeconfig = config["pipes"][pipename]
+   for partcfg in pipeconfig:
+      klass = import_name(partcfg["use"], package=package)
+      del partcfg["use"]
+      parts.append((klass, partcfg))
    return parts
 
 
@@ -35,7 +91,7 @@ def piped(parts):
    # it is convenient that parts can be given in logical order, but
    # here it's more convenient reversing it
    parts.reverse()
-   pipe = parts.pop()() # instantiate first generator
+   pipe = parts.pop()([]) # instantiate first generator, with empty stream
    innermost = parts.pop() # but not its wrapper just yet
    while parts:
       pipe = innermost(pipe)
@@ -50,7 +106,7 @@ class FieldMapper:
       self.stream = stream
 
    def __iter__(self):
-      for record in self.stream():
+      for record in self.stream:
          yield record
 
 
