@@ -25,10 +25,16 @@ Glossary
    pipes
    pipe
       a "master" component composed of several :term:`data components` piped
-      together
+      together and run in order by a Jetstream :term:`Streamer`
 
    streamer
-      part of Jetstream framework that runs a :term:`pipe`
+        Part of Jetstream framework that:
+
+        #. composes a :term:`pipe` from two or more :term:`components`
+        #. adds instrumentation in between every 'slot' or 'connection' between
+           two components
+        #. runs the pipe, indexing received records, performing logging and
+           producing a report of the run
 
    Input
       a :term:`component` reading data from an :term:`data source`, for example

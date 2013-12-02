@@ -12,14 +12,12 @@ combine them into one or more pipes runnable by Jetstream.
 
 Configuring Jetstream
 -----------------------
-
 The YAML_ configuration consists of two or more sections declaring the
 components to be used (at least an :term:`Input` and :term:`Output`) and a
 section declaring the :term:`pipes`.
 
 Configuring components
 ~~~~~~~~~~~~~~~~~~~~~~~
-
 Each :term:`component` is configured under a component type section which is
 either 'inputs', 'introspectors', 'transformers', or 'outputs'. Under the type
 section, each component is listed as:
@@ -42,7 +40,6 @@ An example configuration of an :term:`Input` :term:`component`:
        description: an example MySQL data source
        use: mypackage.mymodule.get_my_sql_source
 
-
 Configuring pipes
 ~~~~~~~~~~~~~~~~~~~
 
@@ -50,9 +47,11 @@ Each :term:`pipe` is configured under 'pipes' section, and is of the form:
 
 .. code-block:: yaml
 
-  <pipe title>: &<pipe_id>
-    description: <some description here>
-    use: <a fully-qualified Python dotted name of the factory>
+  <pipe title>:
+    - *<component_id>
+    - *<component2_id>
+
+Where there can be an arbitrary number of component id's listed.
 
 An example configuration of a :term:`pipe` with two components:
 
@@ -63,13 +62,17 @@ An example configuration of a :term:`pipe` with two components:
          - *sqlsource
          - *csvoutput
 
+Any number of components can be freely arranged into a :term:`pipe`, as long as
+it is started by an :term:`Input`, and ends in an :term:`Output` - although if
+there's no Output configured, Jetstream will add a standard Output that simply
+prints out the :term:`data records`.
 
 Full example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Here is the full configuration file from Jetstream tests:
 
-.. literalinclude:: ../tests/config.yaml
+.. literalinclude:: ../tests/test.yaml
 
 Using the Jetstream cli
 ------------------------
