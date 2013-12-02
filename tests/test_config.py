@@ -11,12 +11,14 @@ Tests for `jetstream` package configuration
 import unittest, os
 import jetstream.config as config
 
+# python structures corresponding w/ YAML "test.yaml"
+from .configdata import *
+
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 CFG_FILE = HERE + os.sep + "test.yaml"
 CFG_URL = "file://" + CFG_FILE
 
-SECTIONS = ["inputs", "inspectors", "transformers", "outputs", "pipes"]
 
 class TestConfiguring(unittest.TestCase):
    "test the utils"
@@ -31,3 +33,8 @@ class TestConfiguring(unittest.TestCase):
 
    def test_mapping_config(self):
       konfig = config.MappingConfig(config.from_yaml(CFG_FILE))
+      self.assertEqual(konfig.inputs, INPUTS)
+      self.assertEqual(konfig.inspectors, INSPECTORS)
+      self.assertEqual(konfig.transformers, TRANSFORMERS)
+      self.assertEqual(konfig.outputs, SUBSCRIBERS)
+      self.assertEqual(konfig.pipes, PIPES)

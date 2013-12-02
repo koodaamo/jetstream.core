@@ -11,14 +11,14 @@ inspectors:
 transformers:
    dummy mapper: &map
       description: a basic dummy mapper
-      use: jetstream.util.FieldMapper
+      use: tests.components.FieldMapper
       map:
          - number: Numero
          - description: Selite
          - amount: Summa
    dummy constructor: &construct
       description: a simple object constructor
-      use: jetstream.util.KlassConstructor
+      use: tests.components.KlassConstructor
 
 outputs:
    dummy subscriber: &subscribe

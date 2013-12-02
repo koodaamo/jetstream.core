@@ -16,9 +16,9 @@ from jetstream.core.instrumentation import INJECT_BEFORE, INJECT_AFTER
 from tests.data import tabledata
 
 HERE = os.path.abspath(os.path.dirname(__file__))
-
 PIPE = "dummy pipe"
 CFG_FILE = HERE + os.sep + "test.yaml"
+BAD_INJECT_ORDER = 5
 
 
 class TestStreamer(unittest.TestCase):
@@ -26,6 +26,8 @@ class TestStreamer(unittest.TestCase):
 
    def setUp(self):
       config = util.yamlcfg(CFG_FILE)
+
+      s = core.Streamer() # exercise all code
       self.streamer = core.Streamer(pipename="dummy pipe", config=config)
 
    def test_passthru_injection(self):
@@ -36,7 +38,13 @@ class TestStreamer(unittest.TestCase):
          for record in stream:
             yield record
 
-      self.streamer.inject(dummy, INJECT_AFTER, types=(base.InputComponent,))
+      inject = self.streamer.inject
+      inject(dummy, INJECT_BEFORE, types=(base.InputComponent,))
+      inject(dummy, INJECT_AFTER, types=(base.InputComponent,))
+
+      def bad_inject():
+         inject(dummy, BAD_INJECT_ORDER, types=(base.InputComponent,))
+      self.assertRaises(Exception, bad_inject)
 
       result = []
       for record in self.streamer:
