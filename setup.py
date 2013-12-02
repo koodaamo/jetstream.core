@@ -45,5 +45,6 @@ setup(
     extras_require={
        "docs": ["sphinxcontrib.programoutput"]
     },
+    tests_require = ("colorama"),
     test_suite='tests.test_suite',
 )
