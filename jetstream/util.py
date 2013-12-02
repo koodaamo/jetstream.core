@@ -4,43 +4,12 @@ from importlib import import_module
 from types import SimpleNamespace
 import yaml
 
-from colorama import init, Fore
-init(autoreset=True)
+from .exceptions import ConfigurationError, ComponentLoadingError
 
 
-def red(txt):
-   return Fore.RED + txt + Fore.RESET
-
-def green(txt):
-   return Fore.GREEN + txt+ Fore.RESET
-
-
-class ComponentLoadingError(Exception):
-   "notify user of component loading problem"
-
-   def __init__(self, module, name, package=""):
-      if package:
-         package = "(%s)" % package
-      self.fullname = "%s%s.%s" % (package, module, name)
-
-   def __str__(self):
-      return red("There is no component '%s' installed." % self.fullname)
-
-
-def err(exc, msg):
-   "add a message to exception"
-   args = exc.args
-   if not args:
-      arg0 = ''
-   else:
-      arg0 = args[0]
-   arg0 += "\n\n%s" % msg
-   exc.args = (arg0,) + args[1:]
-   raise
-
-
-def yamlcfg(filename):
-   with open(filename) as cfgfile:
+def yamlcfg(filepath):
+   "parse YAML configuration instance from file at path"
+   with open(filepath) as cfgfile:
       config = yaml.load(cfgfile)
    return config
 
@@ -59,13 +28,13 @@ def import_name(fqn, package=None):
    name = dotted.pop()
    # klass part was removed from dotted by pop
    # relative imports need the package argument
-
    modulename = ".".join(dotted)
 
    try:
       module = import_module(modulename, package=package)
-   except ImportError as exc:
-      raise ComponentLoadingError(exc.name, name, package=package)
+   except (ImportError, SystemError) as exc:
+      modulename = getattr(exc, "name", "")
+      raise ComponentLoadingError(modulename, name, package=package)
 
    result = getattr(module, name, None)
    if not result:
@@ -77,7 +46,11 @@ def import_name(fqn, package=None):
 def load_pipe(pipename, config, package=None):
    "import pipe parts; return klass & cfg; no component name though"
    parts = []
-   pipeconfig = config["pipes"][pipename]
+   try:
+      pipeconfig = config["pipes"][pipename]
+   except:
+      raise ConfigurationError("pipe", pipename)
+
    for partcfg in pipeconfig:
       klass = import_name(partcfg["use"], package=package)
       del partcfg["use"]
@@ -98,27 +71,3 @@ def piped(parts):
       innermost = parts.pop()
    return innermost(pipe)
 
-
-class FieldMapper:
-   ""
-
-   def __init__(self, stream):
-      self.stream = stream
-
-   def __iter__(self):
-      for record in self.stream:
-         yield record
-
-
-class KlassConstructor:
-   "copy (dict) record data to the object attributes"
-
-   def __init__(self, stream, klass=SimpleNamespace):
-      self.stream = stream
-      self.klass = klass
-
-   def __iter__(self):
-      for record in self.stream():
-         obj = self.klass()
-         obj.__dict__.extend(record)
-         yield obj
