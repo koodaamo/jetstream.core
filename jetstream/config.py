@@ -4,6 +4,7 @@ from contextlib import closing
 from urllib import parse, request
 import yaml
 
+
 def from_yaml(path_or_url):
    "load YAML configuration from path or URL"
    url = parse.urlparse(path_or_url)
@@ -22,26 +23,26 @@ class MappingConfig:
       self.config = mapping
 
    @property
-   def inputs(config):
+   def inputs(self):
       "return the inputs configuration"
       return self.config["inputs"]
 
    @property
-   def outputs(config):
+   def outputs(self):
       "return the outputs configuration"
       return self.config["outputs"]
 
    @property
-   def inspectors(config):
+   def inspectors(self):
       "return the inspectors configuration"
       return self.config["inspectors"]
 
    @property
-   def transformers(config):
+   def transformers(self):
       "return the transformers configuration"
       return self.config["transformers"]
 
    @property
-   def pipes(config):
+   def pipes(self):
       "return the pipes configuration"
       return self.config["pipes"]
