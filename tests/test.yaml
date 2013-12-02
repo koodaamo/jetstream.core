@@ -1,0 +1,33 @@
+inputs:
+   dummy source: &source
+      description: a dummy source
+      use: tests.components.Input
+
+inspectors:
+   dummy validator: &validate
+      description: a dummy validator
+      use: tests.components.Validator
+
+transformers:
+   dummy mapper: &map
+      description: a basic dummy mapper
+      use: jetstream.util.FieldMapper
+      map:
+         - number: Numero
+         - description: Selite
+         - amount: Summa
+   dummy constructor: &construct
+      description: a simple object constructor
+      use: jetstream.util.KlassConstructor
+
+outputs:
+   dummy subscriber: &subscribe
+      description: a dummy subscriber
+      use: tests.components.Subscriber
+
+pipes:
+   dummy pipe:
+      - *source
+      - *map
+      - *validate
+
