@@ -12,9 +12,6 @@ class Component(metaclass=ABCMeta):
       for record in self._stream:
          yield record
 
-   def __call__(self):
-      return self
-
 
 class InputComponent(Component):
    "Input component meant to be subclassed"
