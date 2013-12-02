@@ -2,14 +2,14 @@
 Overview
 ===============================
 
-.. image:: https://badge.fury.io/py/jetstream.png
-    :target: http://badge.fury.io/py/jetstream
+.. image:: https://badge.fury.io/py/jetstream.core.png
+    :target: http://badge.fury.io/py/jetstream.core
 
-.. image:: https://travis-ci.org/koodaamo/jetstream.png?branch=master
-        :target: https://travis-ci.org/koodaamo/jetstream
+.. image:: https://travis-ci.org/koodaamo/jetstream.core.png?branch=master
+        :target: https://travis-ci.org/koodaamo/jetstream.core
 
-.. image:: https://pypip.in/d/jetstream/badge.png
-        :target: https://crate.io/packages/jetstream?version=latest
+.. image:: https://pypip.in/d/jetstream.core/badge.png
+        :target: https://crate.io/packages/jetstream.core?version=latest
 
 Jetstream provides a configurable data batch processing tool and a framework
 for data integration applications, ie. hooking incoming and
