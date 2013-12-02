@@ -17,18 +17,19 @@ readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
-    name='jetstream',
+    name='jetstream.core',
     version='0.1.0',
     description='Boilerplate for a namespaced Python package.',
     long_description=readme + '\n\n' + history,
     author='Petri Savolainen',
     author_email='petri.savolainen@koodaamo.fi',
-    url='https://github.com/koodaamo/jetstream',
-    packages = ['jetstream'],
+    url='https://github.com/koodaamo/jetstream.core',
+    namespace_packages = ["jetstream"],
+    packages = ['jetstream.core'],
     include_package_data=True,
     install_requires=[
         "setuptools",
-        "pyyaml"
+        "pyyaml",
     ],
     license="GPLv3",
     zip_safe=False,
@@ -44,5 +45,5 @@ setup(
     extras_require={
        "docs": ["sphinxcontrib.programoutput"]
     },
-    test_suite='tests',
+    test_suite='tests.test_suite',
 )
