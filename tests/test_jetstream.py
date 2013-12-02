@@ -21,7 +21,7 @@ PIPE = "dummy pipe"
 CFG_FILE = HERE + os.sep + "test.yaml"
 
 
-class TestConfigLoad(unittest.TestCase):
+class TestConfigAndLoading(unittest.TestCase):
    "test the utils"
 
    def setUp(self):
@@ -38,11 +38,7 @@ class TestConfigLoad(unittest.TestCase):
       self.assertEqual(klass.__name__, "Input")
 
 
-   def test_pipe_loading(self):
-      ""
-      components = util.load_pipe(PIPE, self.cfg)
-
-   def test_loading(self):
+   def test_config_loading(self):
       "parse and import everything in config"
       things = ["inputs", "transformers", "inspectors", "outputs"]
       for thing in things:
@@ -51,7 +47,20 @@ class TestConfigLoad(unittest.TestCase):
             klass = util.import_name(cfg["use"], package="tests")
             title = cfg["description"]
 
-   def test_piping(self):
+
+class TestPiping(unittest.TestCase):
+
+
+   def setUp(self):
+      self.cfg = util.yamlcfg(CFG_FILE)
+
+
+   def test_pipe_loading(self):
+      ""
+      components = util.load_pipe(PIPE, self.cfg)
+
+
+   def test_pipe_running(self):
       "build and run a pipe with a dummy data source"
       configs = self.cfg["pipes"]
       parts = []
@@ -64,8 +73,6 @@ class TestConfigLoad(unittest.TestCase):
          for r in pipe:
             result.append(r)
          self.assertEqual(tabledata, tuple(result))
-
-
 
 
 class TestStreamer(unittest.TestCase):
