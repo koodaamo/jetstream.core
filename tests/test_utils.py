@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-test_jetstream
-----------------------------------
+test_utils
+---------------------
 
-Tests for `jetstream` package.
+Tests for `jetstream.utils` package.
 """
 
 import unittest, yaml, sys, os
@@ -21,7 +21,7 @@ PIPE = "dummy pipe"
 CFG_FILE = HERE + os.sep + "test.yaml"
 
 
-class TestConfigAndLoading(unittest.TestCase):
+class TestImporting(unittest.TestCase):
    "test the utils"
 
    def setUp(self):
@@ -73,26 +73,3 @@ class TestPiping(unittest.TestCase):
          for r in pipe:
             result.append(r)
          self.assertEqual(tabledata, tuple(result))
-
-
-class TestStreamer(unittest.TestCase):
-   "test the Streamer"
-
-   def setUp(self):
-      config = util.yamlcfg(CFG_FILE)
-      self.streamer = core.Streamer(pipename="dummy pipe", config=config)
-
-   def test_passthru_injection(self):
-      "streaming should work with simple pass-thru instrument"
-
-      def dummy(stream):
-         "a dummy pass-thru component"
-         for record in stream:
-            yield record
-
-      self.streamer.inject(dummy, INJECT_AFTER, types=(base.InputComponent,))
-
-      result = []
-      for record in self.streamer:
-         result.append(record)
-      self.assertEqual(tabledata, tuple(result))
