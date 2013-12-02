@@ -20,10 +20,10 @@ It does not enforce a particular event loop, http server or client library,
 SQL library, ORM or such. Those are all outside its scope. Instead, Jetstream
 can be extended by following kinds of data processing components:
 
- - inputs for reading data from various sources
- - inspectors for e.g. checking data conformity
- - transformers for modifying data and/or creating stuff from it
- - outputs for receiving data and possibly writing it somewhere else
+- inputs for reading data from various sources
+- inspectors for e.g. checking data conformity
+- transformers for modifying data and/or creating stuff from it
+- outputs for receiving data and possibly writing it somewhere else
 
 Some common built-in components are included and it's easy to write more.
 Jetstream then provides facilities for running data processing pipelines
