@@ -8,64 +8,84 @@ test_jetstream
 Tests for `jetstream` package.
 """
 
-import unittest, yaml, sys
-from jetstream.util import yamlcfg, import_name, piped
+import unittest, yaml, sys, os
+import jetstream.util as util
+import jetstream.core as core
+import jetstream.base as base
+from jetstream.core.instrumentation import INJECT_BEFORE, INJECT_AFTER
+from tests.data import tabledata
 
-from .data import tabledata
+HERE = os.path.abspath(os.path.dirname(__file__))
+
+PIPE = "dummy pipe"
+CFG_FILE = HERE + os.sep + "test.yaml"
 
 
-class TestUtils(unittest.TestCase):
+class TestConfigLoad(unittest.TestCase):
+   "test the utils"
 
    def setUp(self):
-      ""
+      self.cfg = util.yamlcfg(CFG_FILE)
 
    def test_import_normal(self):
-      ""
-      func = import_name("os.path.exists")
+      "import a fqn without leading dot"
+      func = util.import_name("os.path.exists")
       self.assertEqual(func.__name__, "exists")
 
    def test_import_relative(self):
+      "import a relative name with leading dot"
+      klass = util.import_name(".components.Input", package="tests")
+      self.assertEqual(klass.__name__, "Input")
+
+
+   def test_pipe_loading(self):
       ""
-
-   def tearDown(self):
-      ""
-
-
-class TestJetstream(unittest.TestCase):
-
-   def setUp(self, filename="tests/config.yaml"):
-      with open(filename) as cfgfile:
-         self.cfg = yaml.load(cfgfile)
+      components = util.load_pipe(PIPE, self.cfg)
 
    def test_loading(self):
-      "parse and import everything"
-      things = ["inputs", "transformers", "introspectors", "outputs"]
-      print("("+", ".join(things) + ")");
-
+      "parse and import everything in config"
+      things = ["inputs", "transformers", "inspectors", "outputs"]
       for thing in things:
          configs = self.cfg[thing]
          for name, cfg in configs.items():
-            klass = import_name(cfg["use"], package="tests")
+            klass = util.import_name(cfg["use"], package="tests")
             title = cfg["description"]
 
    def test_piping(self):
-      "build and run a basic pipe"
+      "build and run a pipe with a dummy data source"
       configs = self.cfg["pipes"]
       parts = []
       for name, cfg in configs.items():
          for part in cfg:
-            klass = import_name(part["use"], package="tests")
+            klass = util.import_name(part["use"], package="tests")
             parts.append(klass)
-         pipe = piped(parts)
+         pipe = util.piped(parts)
          result = []
          for r in pipe:
             result.append(r)
          self.assertEqual(tabledata, tuple(result))
 
-   def tearDown(self):
-       pass
 
 
-if __name__ == '__main__':
-   unittest.main()
 
+class TestStreamer(unittest.TestCase):
+   "test the Streamer"
+
+   def setUp(self):
+      config = util.yamlcfg(CFG_FILE)
+      self.streamer = core.Streamer(pipename="dummy pipe", config=config)
+
+   def test_passthru_injection(self):
+      "streaming should work with simple pass-thru instrument"
+
+      def dummy(stream):
+         "a dummy pass-thru component"
+         for record in stream:
+            yield record
+
+      self.streamer.inject(dummy, INJECT_AFTER, types=(base.InputComponent,))
+
+      result = []
+      for record in self.streamer:
+         result.append(record)
+      self.assertEqual(tabledata, tuple(result))
