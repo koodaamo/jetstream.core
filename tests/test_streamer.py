@@ -42,9 +42,8 @@ class TestStreamer(unittest.TestCase):
       inject(dummy, INJECT_BEFORE, types=(base.InputComponent,))
       inject(dummy, INJECT_AFTER, types=(base.InputComponent,))
 
-      def bad_inject():
-         inject(dummy, BAD_INJECT_ORDER, types=(base.InputComponent,))
-      self.assertRaises(Exception, bad_inject)
+      fail = lambda: inject(dummy, BAD_INJECT_ORDER, types=(base.InputComponent,))
+      self.assertRaises(Exception, fail)
 
       result = []
       for record in self.streamer:
