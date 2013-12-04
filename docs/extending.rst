@@ -17,7 +17,7 @@ and :term:`Output` components.
 
 Jetstream runs component pipes using what is called a :term:`Streamer`.
 
-.. doc:: streamer
+ :doc:`streamer`
 
 Implementing components
 --------------------------
