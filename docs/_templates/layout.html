@@ -1,0 +1,19 @@
+{%- extends "!layout.html" %}
+
+{%- block extrahead %}
+ <script type="text/javascript">
+
+   $(document).ready(function() {
+     $('input [name="q"]').keypress(function (e) {
+      if (e.which == 13) { $('form#login').submit(); return false; }
+     });
+   });
+
+  </script>
+  <style>
+   input[name="q"] {
+      border:none;
+   }
+  </style>
+{%- endblock %}
+
