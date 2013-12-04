@@ -43,7 +43,7 @@ setup(
         'Programming Language :: Python :: 3.3',
     ],
     extras_require={
-       "docs": ["sphinxcontrib.programoutput"]
+       "docs": ["sphinxcontrib.programoutput", "sphinx-better-theme"]
     },
     tests_require = ("colorama"),
     test_suite='tests.test_suite',
