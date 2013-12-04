@@ -3,7 +3,7 @@
 import logging
 from collections import OrderedDict
 
-from ..import util, base
+from .. import util, base
 from .instrumentation import INJECT_BEFORE, INJECT_AFTER
 
 logging.basicConfig()
