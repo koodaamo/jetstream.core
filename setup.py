@@ -16,9 +16,11 @@ if sys.argv[-1] == 'publish':
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
+VERSION = "0.2.0"
+
 setup(
     name='jetstream.core',
-    version='0.2.0',
+    version=VERSION,
     description='Boilerplate for a namespaced Python package.',
     long_description=readme + '\n\n' + history,
     author='Petri Savolainen',
