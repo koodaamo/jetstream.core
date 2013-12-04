@@ -1,2 +1,2 @@
 sphinx-better-theme
-sphinxcontrib.programoutput
+sphinxcontrib-programoutput
